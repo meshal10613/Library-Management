@@ -1,0 +1,38 @@
+# Environment variables
+.env
+
+# Build outputs
+bin/
+tmp/
+dist/
+build/
+
+# Go binaries
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test outputs
+*.test
+*.out
+coverage.out
+
+# Air (live reload)
+tmp/*
+# .air.toml
+
+# IDEs
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Docker overrides (optional)
+docker-compose.override.yml
