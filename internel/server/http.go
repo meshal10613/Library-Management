@@ -6,6 +6,7 @@ import (
 	"library-management/internel/domain/auth"
 	"library-management/internel/routes"
 	"library-management/pkg/httpresponse"
+	"library-management/pkg/seed"
 	"library-management/pkg/utils"
 	"library-management/pkg/validation"
 
@@ -38,22 +39,34 @@ func StartServer(db *gorm.DB, cfg *config.Config) {
 		},
 	})
 
-	// Run migrations
+	//? Migrations
+	color.Cyan("⏳ Running database migrations...")
 	if err := db.AutoMigrate(&auth.User{}); err != nil {
-		color.Red("❌ Failed to migrate database: %v", err)
+		color.Red("❌ Migration failed: %v", err)
 		return
 	}
+	color.Green("✅ Migrations completed")
 
+		// ── Seed admin ────────────────────────────────────────────────────────────
+	color.Cyan("⏳ Checking admin seed...")
+	seed.SeedAdmin(db, seed.AdminSeed{
+		Name:     cfg.AdminName,
+		Email:    cfg.AdminEmail,
+		Password: cfg.AdminPassword,
+	})
+
+	//? Validator & JWT
 	v := validator.New()
 	customValidator := validation.NewCustomValidator(v)
-
 	jwtService := utils.NewJwtService("")
 
+	//? Global middleware
 	app.Use(func(c fiber.Ctx) error {
 		c.Locals("validator", customValidator)
 		return c.Next()
 	})
 
+	//? Routes
 	app.Get("/", func(c fiber.Ctx) error {
 		return c.JSON(httpresponse.Success{
 			Success: true,
@@ -61,13 +74,11 @@ func StartServer(db *gorm.DB, cfg *config.Config) {
 		})
 	})
 
-	// root group
 	api := app.Group("/api/v1")
-
 	routes.RegisterRoutes(api, db, customValidator, jwtService)
 
+	//? Start
 	port := fmt.Sprintf(":%s", cfg.Port)
-
 	color.Green("✅ Database connected successfully")
 	color.Cyan("🚀 Server running on http://localhost%s", port)
 
