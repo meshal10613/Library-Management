@@ -1,7 +1,7 @@
-package user
+package auth
 
 import (
-	"library-management/internel/domain/user/dto"
+	"library-management/internel/domain/auth/dto"
 
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
@@ -17,10 +17,10 @@ const (
 
 type User struct {
 	gorm.Model
-	Name     string `validate:"required,min=2,max=100"`
-	Email    string `gorm:"unique" validate:"required,email"`
-	Password string `validate:"required,password"`
-	Role     Role   `gorm:"type:varchar(20);default:public"`
+	Name     string `json:"name" validate:"required,min=2,max=100"`
+	Email    string `json:"email" gorm:"unique" validate:"required,email"`
+	Password string `json:"password" validate:"required,password"`
+	Role     Role   `json:"role" gorm:"type:varchar(20);default:public"`
 }
 
 func (u *User) hashPassword(password string) error {

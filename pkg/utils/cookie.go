@@ -1,4 +1,4 @@
-package auth
+package utils
 
 import (
 	"time"
@@ -7,7 +7,7 @@ import (
 )
 
 func SetAuthCookie(c fiber.Ctx, token string) {
-	tokenDuration := 24 * time.Hour // default 24h
+	tokenDuration := 7 * 24 * time.Hour // default 24h
 
 	cookie := &fiber.Cookie{
 		Name:     "token",
