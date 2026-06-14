@@ -32,4 +32,26 @@ func BookRoutes(
 		middlewares.Authorization(string(auth.RoleAdmin), string(auth.RoleLibrarian)),
 		handler.CreateBook,
 	)
+
+	router.Get("",
+		middlewares.Authentication(jwt),
+		handler.GetAllBooks,
+	)
+
+	router.Get("/:id",
+		middlewares.Authentication(jwt),
+		handler.GetBookByID,
+	)
+
+	router.Patch("/:id",
+		middlewares.Authentication(jwt),
+		middlewares.Authorization(string(auth.RoleAdmin), string(auth.RoleLibrarian)),
+		handler.UpdateBook,
+	)
+
+	router.Delete("/:id",
+		middlewares.Authentication(jwt),
+		middlewares.Authorization(string(auth.RoleAdmin), string(auth.RoleLibrarian)),
+		handler.DeleteBook,
+	)
 }
