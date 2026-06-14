@@ -154,3 +154,35 @@ func (h *handler) LoginUser(ctx fiber.Ctx) error {
 		Data:    response,
 	})
 }
+
+func (h *handler) GetMe(ctx fiber.Ctx) error {
+	email, ok := ctx.Locals("email").(string)
+	if !ok {
+		return ctx.Status(fiber.StatusUnauthorized).JSON(httpresponse.Error{
+			Success: false,
+			Message: "Invalid user context",
+		})
+	}
+
+	response, err := h.service.GetMe(email)
+	if err != nil {
+		if errors.Is(err, ErrorAlreadyExist) {
+			return ctx.Status(fiber.StatusConflict).JSON(httpresponse.Error{
+				Success: false,
+				Message: err.Error(),
+			})
+		}
+
+		return ctx.Status(fiber.StatusInternalServerError).JSON(httpresponse.Error{
+			Success: false,
+			Message: "Failed to get me",
+			Details: err.Error(),
+		})
+	}
+
+	return ctx.Status(fiber.StatusCreated).JSON(httpresponse.Success{
+		Success: true,
+		Message: "User profile retrieved successfully",
+		Data:    response,
+	})
+}

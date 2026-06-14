@@ -63,3 +63,19 @@ func (s *service) LoginUser(req *dto.LoginUserRequest) (*dto.UserTokenResponse, 
 
 	return user.ToResponse(token), nil
 }
+
+func (s *service) GetMe(Email string) (*dto.UserResponse, error) {
+	user, err := s.repo.GetByEmail(Email)
+	if err != nil {
+		return nil, err
+	}
+
+	return &dto.UserResponse{
+		ID:        user.ID,
+		Name:      user.Name,
+		Email:     user.Email,
+		Role:      string(user.Role),
+		CreatedAt: user.CreatedAt.String(),
+		UpdatedAt: user.UpdatedAt.String(),
+	}, nil
+}

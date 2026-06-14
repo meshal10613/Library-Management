@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"library-management/pkg/middlewares"
 	"library-management/pkg/utils"
 	"library-management/pkg/validation"
 
@@ -30,8 +31,8 @@ func AuthRoutes(
 	router.Post("/register", handler.RegisterUser)
 	router.Post("/login", handler.LoginUser)
 
-	// router.Get("/me",
-	// 	middlewares.AuthMiddleware(jwt),
-	// 	handler.GetMe,
-	// )
+	router.Get("/me",
+		middlewares.AuthMiddleware(jwt),
+		handler.GetMe,
+	)
 }
