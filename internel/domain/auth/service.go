@@ -36,7 +36,7 @@ func (s *service) RegisterUser(req *dto.RegisterUserRequest) (*dto.UserTokenResp
 	}
 
 	// //? generate token
-	token, err := s.jwtService.GenerateToken(user.ID, user.Name, user.Email)
+	token, err := s.jwtService.GenerateToken(user.ID, user.Name, user.Email, string(user.Role))
 	if err != nil {
 		return nil, err
 	}
@@ -56,7 +56,7 @@ func (s *service) LoginUser(req *dto.LoginUserRequest) (*dto.UserTokenResponse, 
 	}
 
 	//? generate token
-	token, err := s.jwtService.GenerateToken(user.ID, user.Name, user.Email)
+	token, err := s.jwtService.GenerateToken(user.ID, user.Name, user.Email, string(user.Role))
 	if err != nil {
 		return nil, err
 	}

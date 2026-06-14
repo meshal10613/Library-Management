@@ -32,7 +32,8 @@ func AuthRoutes(
 	router.Post("/login", handler.LoginUser)
 
 	router.Get("/me",
-		middlewares.AuthMiddleware(jwt),
+		middlewares.Authentication(jwt),
+		middlewares.Authorization(string(RoleAdmin)),
 		handler.GetMe,
 	)
 }

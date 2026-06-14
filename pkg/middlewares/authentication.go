@@ -8,7 +8,7 @@ import (
 	"github.com/gofiber/fiber/v3"
 )
 
-func AuthMiddleware(jwtService utils.JwtService) fiber.Handler {
+func Authentication(jwtService utils.JwtService) fiber.Handler {
 	return func(c fiber.Ctx) error {
 		// Get token from cookie
 		tokenString := c.Cookies("token")

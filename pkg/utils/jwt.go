@@ -12,11 +12,12 @@ type JwtClaims struct {
 	UserID uint   `json:"user_id"`
 	Name   string `json:"name"`
 	Email  string `json:"email"`
+	Role   string `json:"role"`
 	jwt.RegisteredClaims
 }
 
 type JwtService interface {
-	GenerateToken(userID uint, name, email string) (string, error)
+	GenerateToken(userID uint, name, email, role string) (string, error)
 	ValidateToken(tokenString string) (*JwtClaims, error)
 }
 
@@ -46,15 +47,16 @@ func NewJwtService(secretKey string) JwtService {
 	}
 }
 
-func (js *jwtService) GenerateToken(userID uint, name, email string) (string, error) {
+func (js *jwtService) GenerateToken(userID uint, name, email, role string) (string, error) {
 	claims := JwtClaims{
 		UserID: userID,
 		Name:   name,
 		Email:  email,
+		Role:   role,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(js.tokenDuration)),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
-			Issuer:    "go-tickets",
+			Issuer:    "library-management",
 		},
 	}
 
