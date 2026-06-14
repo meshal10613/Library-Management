@@ -1,5 +1,7 @@
 package dto
 
+import "library-management/pkg/httpresponse"
+
 type UserResponse struct {
 	ID        uint   `json:"id"`
 	Name      string `json:"name"`
@@ -12,4 +14,9 @@ type UserResponse struct {
 type UserTokenResponse struct {
 	Token string       `json:"token,omitempty"`
 	User  UserResponse `json:"user"`
+}
+
+type PaginationResponse struct {
+	Data []UserResponse
+	Meta httpresponse.Meta
 }

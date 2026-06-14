@@ -2,6 +2,8 @@ package user
 
 import (
 	"library-management/pkg/httpresponse"
+	"library-management/pkg/querybuilder"
+	"strconv"
 
 	"github.com/gofiber/fiber/v3"
 )
@@ -17,7 +19,24 @@ func NewHandler(service *service) *handler {
 }
 
 func (h *handler) GetAllUsers(ctx fiber.Ctx) error {
-	users, err := h.service.GetAllUsers()
+	page, _ := strconv.Atoi(ctx.Query("page"))
+	limit, _ := strconv.Atoi(ctx.Query("limit"))
+
+	if page == 0 {
+		page = 1
+	}
+
+	if limit == 0 {
+		limit = 10
+	}
+
+	result, err := h.service.GetAllUsers(ctx, querybuilder.QueryParams{
+		Page:   page,
+		Limit:  limit,
+		Search: ctx.Query("search"),
+		SortBy: ctx.Query("sortBy"),
+		Order:  ctx.Query("order"),
+	})
 	if err != nil {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(httpresponse.Error{
 			Success: false,
@@ -29,6 +48,7 @@ func (h *handler) GetAllUsers(ctx fiber.Ctx) error {
 	return ctx.Status(fiber.StatusOK).JSON(httpresponse.Success{
 		Success: true,
 		Message: "Users retrieved successfully",
-		Data:    users,
+		Data:    result.Data,
+		Meta: &result.Meta,
 	})
 }

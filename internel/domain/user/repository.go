@@ -2,12 +2,14 @@ package user
 
 import (
 	"library-management/internel/domain/auth"
+	"library-management/pkg/querybuilder"
 
+	"github.com/gofiber/fiber/v3"
 	"gorm.io/gorm"
 )
 
 type Repository interface {
-	GetAllUsers() ([]auth.User, error)
+	GetAllUsers(ctx fiber.Ctx, opts querybuilder.QueryParams) ([]*auth.User, int64, error)
 }
 
 type repository struct {
@@ -20,12 +22,21 @@ func NewRepository(db *gorm.DB) Repository {
 	}
 }
 
-func (r *repository) GetAllUsers() ([]auth.User, error) {
-	var users []auth.User
+func (r *repository) GetAllUsers(ctx fiber.Ctx, opts querybuilder.QueryParams) ([]*auth.User, int64, error) {
+	var events []*auth.User
+	var total int64
 
-	if err := r.db.Find(&users).Error; err != nil {
-		return nil, err
-	}
+	qb := querybuilder.New(r.db.Model(&auth.User{}))
 
-	return users, nil
+	qb.Search(opts.Search, "name", "email")
+	qb.Sort(opts.SortBy, opts.Order)
+	qb.Filter(ctx)
+
+	qb.DB.Count(&total)
+
+	qb.Paginate(opts.Page, opts.Limit)
+
+	err := qb.DB.Find(&events).Error
+
+	return events, total, err
 }
