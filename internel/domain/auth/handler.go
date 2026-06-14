@@ -156,7 +156,7 @@ func (h *handler) LoginUser(ctx fiber.Ctx) error {
 }
 
 func (h *handler) GetMe(ctx fiber.Ctx) error {
-	email, ok := ctx.Locals("email").(string)
+	id, ok := ctx.Locals("user_id").(uint)
 	if !ok {
 		return ctx.Status(fiber.StatusUnauthorized).JSON(httpresponse.Error{
 			Success: false,
@@ -164,7 +164,7 @@ func (h *handler) GetMe(ctx fiber.Ctx) error {
 		})
 	}
 
-	response, err := h.service.GetMe(email)
+	response, err := h.service.GetMe(id)
 	if err != nil {
 		if errors.Is(err, ErrorAlreadyExist) {
 			return ctx.Status(fiber.StatusConflict).JSON(httpresponse.Error{

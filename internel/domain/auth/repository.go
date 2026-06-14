@@ -8,10 +8,12 @@ import (
 
 var ErrorAlreadyExist = errors.New("User with this email already exists")
 var ErrorInvalidCredentials = errors.New("Invalid email or password")
+var ErrUserNotFound = errors.New("User not found")
 
 type Repository interface {
 	Register(user *User) error
 	GetByEmail(email string) (*User, error)
+	GetById(id uint) (*User, error)
 }
 
 type repository struct {
@@ -46,5 +48,19 @@ func (r *repository) GetByEmail(email string) (*User, error) {
 		}
 		return nil, result.Error
 	}
+	return &user, nil
+}
+
+func (r *repository) GetById(id uint) (*User, error) {
+	var user User
+
+	result := r.db.First(&user, id)
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return nil, ErrUserNotFound
+		}
+		return nil, result.Error
+	}
+
 	return &user, nil
 }

@@ -2,6 +2,7 @@ package routes
 
 import (
 	"library-management/internel/domain/auth"
+	"library-management/internel/domain/user"
 	"library-management/pkg/utils"
 	"library-management/pkg/validation"
 
@@ -16,4 +17,5 @@ func RegisterRoutes(
 	jwt utils.JwtService,
 ) {
 	auth.AuthRoutes(api, db, v, jwt)
+	user.UserRoutes(api, db, v, jwt)
 }

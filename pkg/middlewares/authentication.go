@@ -33,6 +33,7 @@ func Authentication(jwtService utils.JwtService) fiber.Handler {
 		c.Locals("user_id", claims.UserID)
 		c.Locals("name", claims.Name)
 		c.Locals("email", claims.Email)
+		c.Locals("role", claims.Role)
 
 		return c.Next()
 	}

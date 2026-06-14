@@ -36,7 +36,7 @@ func (u *User) checkPassword(password string) error {
 	return bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(password))
 }
 
-func (e *User) ToResponse(token string) *dto.UserTokenResponse {
+func (e *User) ToTokenResponse(token string) *dto.UserTokenResponse {
 	return &dto.UserTokenResponse{
 		Token: token,
 		User: dto.UserResponse{
@@ -47,5 +47,15 @@ func (e *User) ToResponse(token string) *dto.UserTokenResponse {
 			CreatedAt: e.CreatedAt.String(),
 			UpdatedAt: e.UpdatedAt.String(),
 		},
+	}
+}
+func (e *User) ToResponse() *dto.UserResponse {
+	return &dto.UserResponse{
+		ID:        e.ID,
+		Name:      e.Name,
+		Email:     e.Email,
+		Role:      string(e.Role),
+		CreatedAt: e.CreatedAt.String(),
+		UpdatedAt: e.UpdatedAt.String(),
 	}
 }

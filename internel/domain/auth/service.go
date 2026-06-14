@@ -41,7 +41,7 @@ func (s *service) RegisterUser(req *dto.RegisterUserRequest) (*dto.UserTokenResp
 		return nil, err
 	}
 
-	return user.ToResponse(token), nil
+	return user.ToTokenResponse(token), nil
 }
 
 func (s *service) LoginUser(req *dto.LoginUserRequest) (*dto.UserTokenResponse, error) {
@@ -61,21 +61,14 @@ func (s *service) LoginUser(req *dto.LoginUserRequest) (*dto.UserTokenResponse, 
 		return nil, err
 	}
 
-	return user.ToResponse(token), nil
+	return user.ToTokenResponse(token), nil
 }
 
-func (s *service) GetMe(Email string) (*dto.UserResponse, error) {
-	user, err := s.repo.GetByEmail(Email)
+func (s *service) GetMe(id uint) (*dto.UserResponse, error) {
+	user, err := s.repo.GetById(id)
 	if err != nil {
 		return nil, err
 	}
 
-	return &dto.UserResponse{
-		ID:        user.ID,
-		Name:      user.Name,
-		Email:     user.Email,
-		Role:      string(user.Role),
-		CreatedAt: user.CreatedAt.String(),
-		UpdatedAt: user.UpdatedAt.String(),
-	}, nil
+	return user.ToResponse(), nil
 }

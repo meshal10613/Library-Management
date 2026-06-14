@@ -1,6 +1,7 @@
-package auth
+package user
 
 import (
+	"library-management/internel/domain/auth"
 	"library-management/pkg/middlewares"
 	"library-management/pkg/utils"
 	"library-management/pkg/validation"
@@ -9,30 +10,26 @@ import (
 	"gorm.io/gorm"
 )
 
-func AuthRoutes(
+func UserRoutes(
 	api fiber.Router,
 	db *gorm.DB,
 	v *validation.CustomValidator,
 	jwt utils.JwtService,
 ) {
-	v.RegisterValidation("password", validation.PasswordValidation)
-
 	repository := NewRepository(db)
 	service := NewService(repository, jwt)
 	handler := NewHandler(service)
 
-	router := api.Group("/auth")
+	router := api.Group("/user")
 
 	router.Use(func(c fiber.Ctx) error {
 		c.Locals("validator", v)
 		return c.Next()
 	})
 
-	router.Post("/register", handler.RegisterUser)
-	router.Post("/login", handler.LoginUser)
-
-	router.Get("/me",
+	router.Get("",
 		middlewares.Authentication(jwt),
-		handler.GetMe,
+		middlewares.Authorization(string(auth.RoleAdmin)),
+		handler.GetAllUsers,
 	)
 }
