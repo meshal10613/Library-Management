@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"library-management/internel/config"
 	"library-management/internel/domain/auth"
+	"library-management/internel/domain/book"
 	"library-management/internel/routes"
 	"library-management/pkg/httpresponse"
 	"library-management/pkg/seed"
@@ -41,13 +42,13 @@ func StartServer(db *gorm.DB, cfg *config.Config) {
 
 	//? Migrations
 	color.Cyan("⏳ Running database migrations...")
-	if err := db.AutoMigrate(&auth.User{}); err != nil {
+	if err := db.AutoMigrate(&auth.User{}, &book.Book{}); err != nil {
 		color.Red("❌ Migration failed: %v", err)
 		return
 	}
 	color.Green("✅ Migrations completed")
 
-		// ── Seed admin ────────────────────────────────────────────────────────────
+	// ── Seed admin ────────────────────────────────────────────────────────────
 	color.Cyan("⏳ Checking admin seed...")
 	seed.SeedAdmin(db, seed.AdminSeed{
 		Name:     cfg.AdminName,

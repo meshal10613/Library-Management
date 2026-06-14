@@ -1,14 +1,18 @@
 package dto
 
-import "library-management/pkg/httpresponse"
+import (
+	"library-management/pkg/httpresponse"
+
+	"github.com/google/uuid"
+)
 
 type UserResponse struct {
-	ID        uint   `json:"id"`
-	Name      string `json:"name"`
-	Email     string `json:"email"`
-	Role      string `json:"role"`
-	CreatedAt string `json:"created_at,omitempty"`
-	UpdatedAt string `json:"updated_at,omitempty"`
+	ID        uuid.UUID `json:"id"`
+	Name      string    `json:"name"`
+	Email     string    `json:"email"`
+	Role      string    `json:"role"`
+	CreatedAt string    `json:"created_at,omitempty"`
+	UpdatedAt string    `json:"updated_at,omitempty"`
 }
 
 type UserTokenResponse struct {
@@ -16,7 +20,7 @@ type UserTokenResponse struct {
 	User  UserResponse `json:"user"`
 }
 
-type PaginationResponse struct {
+type UserPaginationResponse struct {
 	Data []UserResponse
 	Meta httpresponse.Meta
 }

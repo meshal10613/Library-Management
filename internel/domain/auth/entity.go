@@ -2,9 +2,10 @@ package auth
 
 import (
 	"library-management/internel/domain/auth/dto"
+	"time"
 
+	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
-	"gorm.io/gorm"
 )
 
 type Role string
@@ -16,11 +17,13 @@ const (
 )
 
 type User struct {
-	gorm.Model
-	Name     string `json:"name" validate:"required,min=2,max=100"`
-	Email    string `json:"email" gorm:"unique" validate:"required,email"`
-	Password string `json:"password" validate:"required,password"`
-	Role     Role   `json:"role" gorm:"type:varchar(20);default:public"`
+	ID        uuid.UUID `gorm:"type:uuid;primaryKey"`
+	Name      string    `json:"name" validate:"required,min=2,max=100"`
+	Email     string    `json:"email" gorm:"unique" validate:"required,email"`
+	Password  string    `json:"password" validate:"required,password"`
+	Role      Role      `json:"role" gorm:"type:varchar(20);default:public"`
+	CreatedAt time.Time `json:"created_at,omitempty"`
+	UpdatedAt time.Time `json:"updated_at,omitempty"`
 }
 
 func (u *User) hashPassword(password string) error {
@@ -49,6 +52,7 @@ func (e *User) ToTokenResponse(token string) *dto.UserTokenResponse {
 		},
 	}
 }
+
 func (e *User) ToResponse() *dto.UserResponse {
 	return &dto.UserResponse{
 		ID:        e.ID,

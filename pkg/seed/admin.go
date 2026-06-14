@@ -5,6 +5,7 @@ import (
 	"library-management/internel/domain/auth"
 
 	"github.com/fatih/color"
+	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
@@ -23,7 +24,7 @@ func SeedAdmin(db *gorm.DB, admin AdminSeed) {
 	// Admin already exists — skip seeding
 	if err == nil {
 		color.Yellow("⚠️  Admin already exists — skipping seed  [%s]", existing.Email)
-		return
+		return 
 	}
 
 	// Unexpected DB error
@@ -40,6 +41,7 @@ func SeedAdmin(db *gorm.DB, admin AdminSeed) {
 	}
 
 	user := auth.User{
+		ID:       uuid.New(),
 		Name:     admin.Name,
 		Email:    admin.Email,
 		Password: string(hash),

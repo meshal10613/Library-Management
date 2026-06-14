@@ -3,6 +3,7 @@ package auth
 import (
 	"errors"
 
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -13,7 +14,7 @@ var ErrUserNotFound = errors.New("User not found")
 type Repository interface {
 	Register(user *User) error
 	GetByEmail(email string) (*User, error)
-	GetById(id uint) (*User, error)
+	GetById(id uuid.UUID) (*User, error)
 }
 
 type repository struct {
@@ -51,7 +52,7 @@ func (r *repository) GetByEmail(email string) (*User, error) {
 	return &user, nil
 }
 
-func (r *repository) GetById(id uint) (*User, error) {
+func (r *repository) GetById(id uuid.UUID) (*User, error) {
 	var user User
 
 	result := r.db.First(&user, id)

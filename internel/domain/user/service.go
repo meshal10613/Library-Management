@@ -21,7 +21,7 @@ func NewService(repo Repository, jwtService utils.JwtService) *service {
 	}
 }
 
-func (s *service) GetAllUsers(ctx fiber.Ctx, req querybuilder.QueryParams) (*dto.PaginationResponse, error) {
+func (s *service) GetAllUsers(ctx fiber.Ctx, req querybuilder.QueryParams) (*dto.UserPaginationResponse, error) {
 	users, total, err := s.repo.GetAllUsers(ctx, querybuilder.QueryParams{
 		Page:   req.Page,
 		Limit:  req.Limit,
@@ -41,12 +41,12 @@ func (s *service) GetAllUsers(ctx fiber.Ctx, req querybuilder.QueryParams) (*dto
 
 	totalPages := int64((int(total) + req.Limit - 1) / req.Limit)
 
-	return &dto.PaginationResponse{
+	return &dto.UserPaginationResponse{
 		Data: responses,
 		Meta: httpresponse.Meta{
-			Page:       req.Page,
-			Limit:      req.Limit,
-			Total:      total,
+			Page:      req.Page,
+			Limit:     req.Limit,
+			Total:     total,
 			TotalPage: totalPages,
 		},
 	}, nil

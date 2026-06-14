@@ -10,6 +10,7 @@ import (
 
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v3"
+	"github.com/google/uuid"
 )
 
 type handler struct {
@@ -156,7 +157,7 @@ func (h *handler) LoginUser(ctx fiber.Ctx) error {
 }
 
 func (h *handler) GetMe(ctx fiber.Ctx) error {
-	id, ok := ctx.Locals("user_id").(uint)
+	id, ok := ctx.Locals("user_id").(uuid.UUID)
 	if !ok {
 		return ctx.Status(fiber.StatusUnauthorized).JSON(httpresponse.Error{
 			Success: false,

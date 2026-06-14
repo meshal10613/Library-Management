@@ -3,6 +3,8 @@ package auth
 import (
 	"library-management/internel/domain/auth/dto"
 	"library-management/pkg/utils"
+
+	"github.com/google/uuid"
 )
 
 type service struct {
@@ -20,6 +22,7 @@ func NewService(repo Repository, jwtService utils.JwtService) *service {
 func (s *service) RegisterUser(req *dto.RegisterUserRequest) (*dto.UserTokenResponse, error) {
 	var err error
 	user := User{
+		ID:    uuid.New(),
 		Name:  req.Name,
 		Email: req.Email,
 	}
@@ -64,7 +67,7 @@ func (s *service) LoginUser(req *dto.LoginUserRequest) (*dto.UserTokenResponse, 
 	return user.ToTokenResponse(token), nil
 }
 
-func (s *service) GetMe(id uint) (*dto.UserResponse, error) {
+func (s *service) GetMe(id uuid.UUID) (*dto.UserResponse, error) {
 	user, err := s.repo.GetById(id)
 	if err != nil {
 		return nil, err
