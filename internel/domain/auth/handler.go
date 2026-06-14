@@ -53,7 +53,7 @@ func formatValidationErrors(err error) string {
 
 func (h *handler) RegisterUser(ctx fiber.Ctx) error {
 	var req dto.RegisterUserRequest
- 
+
 	if err := ctx.Bind().Body(&req); err != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(httpresponse.Error{
 			Success: false,
@@ -61,7 +61,7 @@ func (h *handler) RegisterUser(ctx fiber.Ctx) error {
 			Details: err.Error(),
 		})
 	}
- 
+
 	cv, ok := ctx.Locals("validator").(*validation.CustomValidator)
 	if !ok {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(httpresponse.Error{
@@ -69,7 +69,7 @@ func (h *handler) RegisterUser(ctx fiber.Ctx) error {
 			Message: "Validator not available",
 		})
 	}
- 
+
 	if err := cv.Validate(req); err != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(httpresponse.Error{
 			Success: false,
@@ -77,7 +77,7 @@ func (h *handler) RegisterUser(ctx fiber.Ctx) error {
 			Details: formatValidationErrors(err),
 		})
 	}
- 
+
 	response, err := h.service.RegisterUser(&req)
 	if err != nil {
 		if errors.Is(err, ErrorAlreadyExist) {
@@ -86,19 +86,71 @@ func (h *handler) RegisterUser(ctx fiber.Ctx) error {
 				Message: err.Error(),
 			})
 		}
- 
+
 		return ctx.Status(fiber.StatusInternalServerError).JSON(httpresponse.Error{
 			Success: false,
 			Message: "Failed to register user",
 			Details: err.Error(),
 		})
 	}
- 
+
 	utils.SetAuthCookie(ctx, response.Token)
- 
+
 	return ctx.Status(fiber.StatusCreated).JSON(httpresponse.Success{
 		Success: true,
 		Message: "User registered successfully",
+		Data:    response,
+	})
+}
+
+func (h *handler) LoginUser(ctx fiber.Ctx) error {
+	var req dto.LoginUserRequest
+
+	if err := ctx.Bind().Body(&req); err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(httpresponse.Error{
+			Success: false,
+			Message: "Invalid request payload",
+			Details: err.Error(),
+		})
+	}
+
+	cv, ok := ctx.Locals("validator").(*validation.CustomValidator)
+	if !ok {
+		return ctx.Status(fiber.StatusInternalServerError).JSON(httpresponse.Error{
+			Success: false,
+			Message: "Validator not available",
+		})
+	}
+
+	if err := cv.Validate(req); err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(httpresponse.Error{
+			Success: false,
+			Message: "Validation failed",
+			Details: formatValidationErrors(err),
+		})
+	}
+
+	response, err := h.service.LoginUser(&req)
+	if err != nil {
+		if errors.Is(err, ErrorAlreadyExist) {
+			return ctx.Status(fiber.StatusConflict).JSON(httpresponse.Error{
+				Success: false,
+				Message: err.Error(),
+			})
+		}
+
+		return ctx.Status(fiber.StatusInternalServerError).JSON(httpresponse.Error{
+			Success: false,
+			Message: "Failed to login user",
+			Details: err.Error(),
+		})
+	}
+
+	utils.SetAuthCookie(ctx, response.Token)
+
+	return ctx.Status(fiber.StatusCreated).JSON(httpresponse.Success{
+		Success: true,
+		Message: "User logged in successfully",
 		Data:    response,
 	})
 }

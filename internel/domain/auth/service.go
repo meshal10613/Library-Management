@@ -43,3 +43,23 @@ func (s *service) RegisterUser(req *dto.RegisterUserRequest) (*dto.UserTokenResp
 
 	return user.ToResponse(token), nil
 }
+
+func (s *service) LoginUser(req *dto.LoginUserRequest) (*dto.UserTokenResponse, error) {
+	user, err := s.repo.GetByEmail(req.Email)
+	if err != nil {
+		return nil, err
+	}
+
+	err = user.checkPassword(req.Password)
+	if user == nil || err != nil {
+		return nil, ErrorInvalidCredentials
+	}
+
+	//? generate token
+	token, err := s.jwtService.GenerateToken(user.ID, user.Name, user.Email)
+	if err != nil {
+		return nil, err
+	}
+
+	return user.ToResponse(token), nil
+}

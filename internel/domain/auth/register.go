@@ -28,7 +28,7 @@ func AuthRoutes(
 	})
 
 	router.Post("/register", handler.RegisterUser)
-	// router.Post("/login", handler.LoginUser)
+	router.Post("/login", handler.LoginUser)
 
 	// router.Get("/me",
 	// 	middlewares.AuthMiddleware(jwt),
