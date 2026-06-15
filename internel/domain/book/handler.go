@@ -128,6 +128,13 @@ func (h *handler) GetAllBooks(ctx fiber.Ctx) error {
 		})
 	}
 
+	if len(books.Data) == 0 {
+		return ctx.JSON(httpresponse.Success{
+			Success: true,
+			Message: "No books found",
+		})
+	}
+
 	return ctx.JSON(httpresponse.Success{
 		Success: true,
 		Message: "Books retrived successfully",
