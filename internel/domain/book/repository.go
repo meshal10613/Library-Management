@@ -2,7 +2,6 @@ package book
 
 import (
 	"errors"
-	"library-management/internel/domain/loan"
 	"library-management/pkg/querybuilder"
 
 	"github.com/gofiber/fiber/v3"
@@ -66,7 +65,7 @@ func (r *repository) GetAllBooks(ctx fiber.Ctx, opts querybuilder.QueryParams) (
 
 	qb := querybuilder.New(r.db.Model(&Book{}))
 
-	qb.Search(opts.Search, "name", "email")
+	qb.Search(opts.Search, "title", "author")
 	qb.Sort(opts.SortBy, opts.Order)
 	qb.Filter(ctx)
 
@@ -94,7 +93,6 @@ func (r *repository) UpdateBook(book *Book) error {
 func (r *repository) DeleteBook(id uuid.UUID) error {
 	var book Book
 
-	// Check if book exists
 	if err := r.db.First(&book, "id = ?", id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return ErrBookNotFound
@@ -102,19 +100,5 @@ func (r *repository) DeleteBook(id uuid.UUID) error {
 		return err
 	}
 
-	tx := r.db.Begin()
-
-	// Delete related loans (if any)
-	if err := tx.Where("book_id = ?", id).Delete(&loan.Loan{}).Error; err != nil {
-		tx.Rollback()
-		return err
-	}
-
-	// Delete book
-	if err := tx.Delete(&book).Error; err != nil {
-		tx.Rollback()
-		return err
-	}
-
-	return tx.Commit().Error
+	return r.db.Delete(&book).Error
 }

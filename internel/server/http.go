@@ -5,6 +5,7 @@ import (
 	"library-management/internel/config"
 	"library-management/internel/domain/auth"
 	"library-management/internel/domain/book"
+	"library-management/internel/domain/loan"
 	"library-management/internel/routes"
 	"library-management/pkg/httpresponse"
 	"library-management/pkg/seed"
@@ -42,7 +43,7 @@ func StartServer(db *gorm.DB, cfg *config.Config) {
 
 	//? Migrations
 	color.Cyan("⏳ Running database migrations...")
-	if err := db.AutoMigrate(&auth.User{}, &book.Book{}); err != nil {
+	if err := db.AutoMigrate(&auth.User{}, &book.Book{}, &loan.Loan{}); err != nil {
 		color.Red("❌ Migration failed: %v", err)
 		return
 	}
